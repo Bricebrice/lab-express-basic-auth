@@ -27,9 +27,16 @@ router.post("/signup", (req, res, next) => {
     .then((user) => {
       console.log("user", user);
 
-      res.redirect("/");
+      // req.session.currentUser = user;
+      // res.render("auth/profile", user);
+      res.redirect("/userProfile");
     })
     .catch((err) => console.log(err));
 });
+
+// ****************************************************************************************
+// GET route to display the profile page
+// ****************************************************************************************
+router.get("/userProfile", (req, res) => res.render("users/user-profile"));
 
 module.exports = router;
