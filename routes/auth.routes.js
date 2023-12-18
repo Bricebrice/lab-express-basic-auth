@@ -26,9 +26,6 @@ router.post("/signup", (req, res, next) => {
     })
     .then((user) => {
       console.log("user", user);
-
-      // req.session.currentUser = user;
-      // res.render("auth/profile", user);
       res.redirect("/userProfile");
     })
     .catch((err) => console.log(err));
@@ -37,6 +34,71 @@ router.post("/signup", (req, res, next) => {
 // ****************************************************************************************
 // GET route to display the profile page
 // ****************************************************************************************
-router.get("/userProfile", (req, res) => res.render("users/user-profile"));
+router.get("/userProfile", (req, res) =>
+  res.render("users/user-profile", { userInSession: req.session.currentUser })
+);
+
+// ****************************************************************************************
+// GET route to display the form to login
+// ****************************************************************************************
+router.get("/login", (req, res) => res.render("auth/login"));
+
+// ****************************************************************************************
+// POST route to login the user
+// ****************************************************************************************
+router.post("/login", (req, res) => {
+  console.log("SESSION =====> ", req.session);
+
+  console.log("req.body", req.body);
+  const { username, password } = req.body;
+
+  if (username === "" || password === "") {
+    res.render("auth/login", {
+      errorMessage: "Please enter both, username and password to login.",
+    });
+    return;
+  }
+
+  User.findOne({ username })
+    .then((user) => {
+      console.log("user", user);
+      // console.log("password", password);
+      // console.log("user password", user.password);
+
+      // if user doesn't exist, display message
+      if (!user) {
+        console.log("Username not registered. ");
+        res.render("auth/login", {
+          errorMessage: "User not found and/or incorrect password.",
+        });
+        return;
+        // if there's a user, compare the encrypted pwd with provided and render user-profile page with data
+      } else if (bcrypt.compareSync(password, user.password)) {
+        console.log("Am I here?", req.session.currentUser);
+        console.log("Or here?", req.session);
+
+        // res.render("users/user-profile", { user });
+        req.session.currentUser = user;
+        res.redirect("/userProfile");
+        // if pwd doesn't match, display message
+      } else {
+        console.log("Incorrect password. ");
+        res.render("auth/login", {
+          errorMessage: "User not found and/or incorrect password.",
+        });
+      }
+    })
+    .catch((err) => console.log(err));
+});
+
+// ****************************************************************************************
+// POST route to logout the user
+// ****************************************************************************************
+router.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) next(err);
+    res.redirect("/");
+  });
+});
 
 module.exports = router;
