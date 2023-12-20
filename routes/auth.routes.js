@@ -103,4 +103,18 @@ router.post("/logout", isLoggedOut, (req, res) => {
   });
 });
 
+// ****************************************************************************************
+// GET route to display the main page
+// ****************************************************************************************
+router.get("/main", isLoggedIn, (req, res) =>
+  res.render("users/main", { userInSession: req.session.currentUser })
+);
+
+// ****************************************************************************************
+// GET route to display the private page
+// ****************************************************************************************
+router.get("/private", isLoggedIn, (req, res) =>
+  res.render("users/private", { userInSession: req.session.currentUser })
+);
+
 module.exports = router;
