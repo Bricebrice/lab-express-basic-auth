@@ -20,6 +20,12 @@ router.post("/signup", isLoggedOut, (req, res, next) => {
   // console.log("req.body", req.body);
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    res.render("auth/signup", {
+      errorMessage: "Please fill in all fields",
+    });
+  }
+
   bcrypt
     .hash(password, saltRounds)
     .then((hash) => {
