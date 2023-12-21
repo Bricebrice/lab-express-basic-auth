@@ -102,7 +102,7 @@ router.post("/login", isLoggedOut, (req, res) => {
 // ****************************************************************************************
 // POST route to logout the user
 // ****************************************************************************************
-router.post("/logout", isLoggedOut, (req, res) => {
+router.post("/logout", isLoggedIn, (req, res) => {
   req.session.destroy((err) => {
     if (err) next(err);
     res.redirect("/");
